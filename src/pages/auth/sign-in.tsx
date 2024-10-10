@@ -1,8 +1,10 @@
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
-import { useSearchParams } from 'react-router-dom'
+import { useMutation } from 'react-query'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
 
+import { signIn } from '@/api/sign-in'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -17,6 +19,8 @@ type SignInForm = z.infer<typeof signInForm>
 export function SignIn() {
   const [searchParams] = useSearchParams()
 
+  const navigate = useNavigate()
+
   const {
     register,
     handleSubmit,
@@ -28,8 +32,17 @@ export function SignIn() {
     },
   })
 
+  const { mutateAsync: authenticate } = useMutation({
+    mutationFn: signIn,
+  })
+
   async function handleSignIn(data: SignInForm) {
-    console.log(data)
+    try {
+      await authenticate({ email: data.email, password: data.password })
+      navigate('/')
+    } catch (error) {
+      // toast.error('Credenciais inválidas.')
+    }
   }
 
   return (
