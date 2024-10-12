@@ -2,6 +2,7 @@ import { isAxiosError } from 'axios'
 import { useEffect } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 
+import { HeaderNavigationButtons } from '@/components/header-navigation-buttons'
 import { api } from '@/lib/axios'
 
 export function AppLayout() {
@@ -11,11 +12,11 @@ export function AppLayout() {
     const interceptorId = api.interceptors.response.use(
       (response) => response,
       (error) => {
+        console.log(error)
         if (isAxiosError(error)) {
           const status = error.response?.status
-          const code = error.response?.data.code
 
-          if (status === 401 && code === 'UNAUTHORIZED') {
+          if (status === 401) {
             navigate('/sign-in', { replace: true })
           } else {
             throw error
@@ -31,9 +32,13 @@ export function AppLayout() {
 
   return (
     <div>
-      <h1>Cabeçalho</h1>
+      <div className="flex justify-between p-5">
+        <img src="./logo-only.png" width="56px" alt="" />
+        <HeaderNavigationButtons />
+        <span>Novo produto e user</span>
+      </div>
 
-      <div>
+      <div className="px-40">
         <Outlet />
       </div>
     </div>
